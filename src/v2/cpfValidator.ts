@@ -1,51 +1,48 @@
-export function validateCpf (cpf: string): boolean {
-	if (cpf!== null) {
-        if (cpf!== undefined) {
-            if (cpf.length >= 11 || cpf.length <= 14){
-                cpf=cpf
-                    .replace('.','')
-                    .replace('.','')
-                    .replace('-','')
-                    .replace(" ","");
+const removeSpecialCharacters = (cpf: string) : string => {
+    return cpf.replace('.','').replace('.','').replace('-','').replace(" ","");
+};
 
-                if (!cpf.split("").every(c => c === cpf[0])) {
-                    try{
-                        let     digitSum, digitSum2;
-                        let     dg1, dg2, rest;
-                        let     digito;
-                        let     nDigResult;
-                        digitSum = digitSum2 = 0;
-                        dg1 = dg2 = rest = 0;
+const hasSameCharacters = (cpf) : boolean => {
+    return !cpf.split("").every(c => c === cpf[0]);
+};
 
-                        for (let nCount = 1; nCount < cpf.length -1; nCount++) {
-                            digito = parseInt(cpf.substring(nCount -1, nCount));  							
-                            digitSum = digitSum + ( 11 - nCount ) * digito;  
+const calculateDigits = (cpf) : string => {
+    let     digitSum, digitSum2;
+    let     calculatedDigit1, calculatedDigit2, rest;
+    let     incrementNumber;
+    digitSum = digitSum2 = 0;
+    calculatedDigit1 = calculatedDigit2 = rest = 0;
 
-                            digitSum2 = digitSum2 + ( 12 - nCount ) * digito;
-                        };
+    for (let nCount = 1; nCount < cpf.length -1; nCount++) {
+        incrementNumber = parseInt(cpf.substring(nCount -1, nCount));
+        digitSum = digitSum + ( 11 - nCount ) * incrementNumber;
 
-                        rest = (digitSum % 11);  
-                
-                        dg1 = (rest < 2) ? dg1 = 0 : 11 - rest;  
-                        digitSum2 += 2 * dg1;  
-                        rest = (digitSum2 % 11);  
-                        if (rest < 2)  
-                            dg2 = 0;  
-                        else  
-                            dg2 = 11 - rest;  
-                
-                            let nDigVerific = cpf.substring(cpf.length-2, cpf.length);  
-                        nDigResult = "" + dg1 + "" + dg2;  
-                        return nDigVerific == nDigResult;
-                    }catch (e){  
-                        console.error("Erro !"+e);  
-    
-                        return false;
-                    }  
-                } else return false
-            }else return false;
-        }
-	} else return false;
+        digitSum2 = digitSum2 + ( 12 - nCount ) * incrementNumber;
+    };
+
+    rest = (digitSum % 11);
+
+    calculatedDigit1 = (rest < 2) ? calculatedDigit1 = 0 : 11 - rest;
+    digitSum2 += 2 * calculatedDigit1;
+    rest = (digitSum2 % 11);
+    if (rest < 2)
+        calculatedDigit2 = 0;
+    else
+        calculatedDigit2 = 11 - rest;
+
+    return calculatedDigit1 + "" + calculatedDigit2;
+};
+
+export const validateCpf = (cpf: string) : boolean => {
+    if (!cpf) return false;
+    if (cpf.length < 11 || cpf.length > 14) return false;
+
+    cpf = removeSpecialCharacters(cpf);
+    if (!hasSameCharacters(cpf)) return false;
+
+    let lastDigits = cpf.substring(cpf.length-2, cpf.length);
+
+    const calculatedDigits = calculateDigits(cpf);
+
+    return lastDigits == calculatedDigits;
 }
-
-validateCpf('111.444.777-35')
