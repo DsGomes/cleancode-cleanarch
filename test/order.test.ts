@@ -18,24 +18,25 @@ describe('Order', () => {
     it('should not complete the order when there is no item', () => {
         const order = new Order(validCpf);
 
-        expect(() => { order.calculateTotal() }).toThrow('You need select at least one product!');
+        expect(() => { order.sendOrder() }).toThrow('You need select at least one product!');
     });
 
     it('should complete the order when passed correct params without discount', () => {
         const order = new Order(validCpf);
         order.addItem(itens[0].description, itens[0].price, itens[0].quantity);
-        const orderTotal = order.calculateTotal();
+        const orderTotal = order.sendOrder();
 
-        expect(orderTotal).toBe(20);
+        expect(orderTotal.order.total).toBe(20);
     });
 
     it('should complete the order when passed correct params with discount', () => {
         const order = new Order(validCpf);
+        
         order.addItem(itens[0].description, itens[0].price, itens[0].quantity);
         order.addItem(itens[1].description, itens[1].price, itens[1].quantity);
         order.addVoucherDiscount(voucher);
-        const orderTotal = order.calculateTotal();
+        const orderTotal = order.sendOrder();
 
-        expect(orderTotal).toBe(48);
+        expect(orderTotal.order.total).toBe(54.4);
     });
 });
