@@ -31,7 +31,7 @@ describe('Order', () => {
 
     it('should complete the order when passed correct params with discount', () => {
         const order = new Order(validCpf);
-        
+
         order.addItem(itens[0].description, itens[0].price, itens[0].quantity);
         order.addItem(itens[1].description, itens[1].price, itens[1].quantity);
         order.addVoucherDiscount(voucher);

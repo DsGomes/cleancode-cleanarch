@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { validateCpf } from "./cpfValidator";
+import Cpf from './Cpf';
 import Item from "./Item";
 import { OrderResponse } from './utils/OrderResponse';
 
@@ -7,11 +7,10 @@ export default class Order {
     readonly id: string;
     private items: Item[];
     private voucher: number = 0;
-    readonly cpf: string;
+    private cpf: Cpf;
 
     constructor(cpf: string){
-        if(!validateCpf(cpf)) throw new Error('Invalid CPF');
-        this.cpf = cpf;
+        this.cpf = new Cpf(cpf);
         this.items = [];
         this.id = uuid()
     }
@@ -22,14 +21,14 @@ export default class Order {
         this.items.forEach(item => totalPrice += (item.price * item.quantity));
         return totalPrice - (totalPrice * this.voucher);
     }
-    
+
     addItem(description: string, price: number, quantity: number): void{
         this.items.push(new Item(description, price, quantity));
     }
 
     addVoucherDiscount(voucherDiscount: number): void {
         if (voucherDiscount <= 0) throw new Error('Invalid discount');
-        
+
         this.voucher = voucherDiscount / 100;
     }
 
