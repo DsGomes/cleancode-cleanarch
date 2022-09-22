@@ -2,6 +2,13 @@ import Item from "../src/v2/Item";
 import Order from "../src/v2/Order";
 import Voucher from "../src/v2/Voucher";
 
+const today = new Date();
+const yesterday = new Date();
+yesterday.setDate(today.getDate() - 1);
+
+today.setHours(0,0,0,0);
+yesterday.setHours(0,0,0,0);
+
 describe('Order', () => {
     const invalidCpf = '1114447773';
     const validCpf = '111.444.777-35';
@@ -10,7 +17,8 @@ describe('Order', () => {
         new Item(2, 'order item 2', 12),
         new Item(3, 'order item 3', 16),
     ];
-    const voucher = new Voucher('OFF20', 20);
+    const expiredVoucher = new Voucher('OFF10', 10, yesterday);
+    const validVoucher = new Voucher('OFF20', 20, today);
 
     it('should not complete the order when cpf is invalid', () => {
         expect(() => { new Order(invalidCpf) }).toThrow('Invalid CPF');
@@ -35,9 +43,20 @@ describe('Order', () => {
 
         order.addItem(itens[1], 2);
         order.addItem(itens[2], 3);
-        order.addVoucherDiscount(voucher);
+        order.addVoucherDiscount(validVoucher);
         const orderTotal = order.calculateTotal();
 
         expect(orderTotal).toBe(57.6);
+    });
+
+    it('should complete the order with total price when expired discount', () => {
+        const order = new Order(validCpf);
+
+        order.addItem(itens[1], 2);
+        order.addItem(itens[2], 3);
+        order.addVoucherDiscount(expiredVoucher);
+        const orderTotal = order.calculateTotal();
+
+        expect(orderTotal).toBe(72);
     });
 });
