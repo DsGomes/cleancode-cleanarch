@@ -26,6 +26,10 @@ export default class Order {
     }
 
     addItem(item: Item, quantity: number): void{
+        if(quantity <= 0) throw new Error('Quantity item must be greater than zero');
+        this.orderItems.forEach(orderItem => {
+            if(orderItem.itemId === item.id) throw new Error('Item already added.');
+        })
         this.orderItems.push(new OrderItem(item.id, item.price, quantity));
     }
 

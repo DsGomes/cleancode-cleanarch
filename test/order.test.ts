@@ -59,4 +59,15 @@ describe('Order', () => {
 
         expect(orderTotal).toBe(72);
     });
+
+    it('should not complete the order when quantity item is negative', () => {
+        const order = new Order(validCpf);
+        expect(()=> {order.addItem(itens[1], -1)}).toThrow(new Error('Quantity item must be greater than zero'));        
+    })
+
+    it('should not complete the order when item was already added', () => {
+        const order = new Order(validCpf);
+        order.addItem(itens[1], 2);
+        expect(()=> {order.addItem(itens[1], 1)}).toThrow(new Error('Item already added.')); 
+    })
 });
